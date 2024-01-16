@@ -1,0 +1,60 @@
+{{define "content"}}
+<!-- <div class="flex justify-center">
+  <img
+    src="/placeholder.svg"
+    width="64"
+    height="64"
+    alt="Brew Journal Logo"
+    style="aspect-ratio: 64 / 64; object-fit: cover"
+  />
+</div> -->
+<h2 class="text-3xl text-center">Login to your account</h2>
+
+<form id="login-form">
+  <div class="space-y-2 mt-8">
+    <label class="text-sm font-medium leading-none" for="username">
+      Username
+    </label>
+    <input
+      class="px-3 py-2 h-10 w-full rounded-md border border-emerald-300 text-emerald-950"
+      id="username"
+      name="username"
+      placeholder="Enter your username"
+      type="text"
+      required
+    />
+  </div>
+
+  <div class="space-y-2 mt-8">
+    <label class="text-sm font-medium leading-none" for="password">
+      Password
+    </label>
+    <input
+      class="px-3 py-2 h-10 w-full rounded-md border border-emerald-300 text-emerald-950"
+      id="password"
+      name="password"
+      type="password"
+      required
+    />
+  </div>
+</form>
+
+<button
+  class="h-10 px-4 py-2 mt-8 w-full bg-emerald-800 hover:bg-emerald-600 rounded-md"
+  hx-post="/api/account/login"
+  hx-swap="none"
+  hx-include="#login-form"
+>
+  Login
+</button>
+
+<a
+  class="text-sm mt-4 hover:underline cursor-pointer"
+  hx-post="/api/account/create"
+  hx-swap="none"
+  hx-include="#login-form"
+>
+  Create account
+</a>
+
+{{end}}

@@ -86,9 +86,17 @@ To get a local copy up and running follow these simple steps.
    go mod download
    ```
 3. Start the server
+
+   ```sh
+   go run .
+   ```
+
+   or
+
    ```sh
    air
    ```
+
 4. Start tailwindcss _(optional - it listens to style changes)_
    ```sh
    tailwindcss -i ./input.css -o ./static/output.css --watch
