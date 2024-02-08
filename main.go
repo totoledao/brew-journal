@@ -18,9 +18,11 @@ func main() {
   handler.InitDB()
 
   // Routes
-  app.GET("/", handler.Home)
   app.GET("/login", handler.Login)
-	app.GET("/show/:id", handler.Show)
+  
+  // Protected Routes
+  app.GET("/", handler.Home, utils.JWTMiddleware())
+	app.GET("/show/:id", handler.Show, utils.JWTMiddleware())
 
   // API
   app.POST("/api/account/login", handler.AccountLogin)

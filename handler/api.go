@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/totoledao/brew-journal/handler/utils"
 )
 
 type ReqError struct {
@@ -12,9 +13,9 @@ type ReqError struct {
   Error  string `json:"error" xml:"error"`
 }
 
-type UserCredentials struct  {
- Username    string
- Password string
+type UserCredentials struct {
+	ID       *string
+	Username *string
 }
 
 func errHelper(c echo.Context, message string, err error){	
@@ -27,28 +28,41 @@ func errHelper(c echo.Context, message string, err error){
   	c.JSON(http.StatusInternalServerError, e)
 }
 
+func handleNextScreenLogin(c echo.Context, u *UserCredentials) error {
+
+	err := utils.CreateJWT(c, *u.Username, *u.ID)
+	if err != nil {
+		errHelper(c, "Error creating JWT Token", err)
+		return err
+	}
+
+	user := UserCredentials {Username: u.Username, ID: u.ID}
+
+	return utils.Tmpl(c, user, "view/home.html")
+}
+
 func AccountLogin(c echo.Context) error {
 	username := c.FormValue("username")
 	password := c.FormValue("password")
 	
-	err := UsersLogin(username, password)
+	u, err := UsersLogin(username, password)
 	if err != nil {
 		errHelper(c, "Error Login", err)
 		return err
 	}
 	
-	return c.String(http.StatusOK, "Login successful")
+	return handleNextScreenLogin(c, u)
 }
 
 func AccountCreate(c echo.Context) error {
 	username := c.FormValue("username")
 	password := c.FormValue("password")
 
-	err := UsersCreate(username, password)
+	u, err := UsersCreate(username, password)
 	if err != nil {
 		errHelper(c, "Error inserting user", err)
 		return err
 	}
 	
-	return c.String(http.StatusOK, "Account created")
+	return handleNextScreenLogin(c, u)
 }

@@ -1,10 +1,3 @@
-{{define "content"}}
-<h1 class="text-3xl text-cyan-800">Hello world!</h1>
-<ul>
-  {{range .Todos}} {{if .Done}}
-  <li>{{.Title}}</li>
-  {{else}}
-  <li class="text-red-800">{{.Title}}</li>
-  {{end}} {{end}}
-</ul>
-{{end}}
+<div id="content">
+  <h1 class="text-3xl text-cyan-800">Hello, {{.Username}}!</h1>
+</div>

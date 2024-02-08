@@ -34,7 +34,6 @@ func InitDB() {
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		)
 	`)
-
 	if err != nil {
 		fmt.Println("Error creating users table:", err)
 		return
@@ -43,11 +42,11 @@ func InitDB() {
 	fmt.Println("User table created or already exists.")
 }
 
-func UsersCreate(username, password string) error{
+func UsersCreate(username, password string) (*UserCredentials, error){
 	db, err := sql.Open("sqlite3", "brew.db")
 	if err != nil {
 			fmt.Println("Error opening SQLite database:", err)
-			return err
+			return nil, err
 	}
   defer db.Close()
 
@@ -55,7 +54,7 @@ func UsersCreate(username, password string) error{
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 			fmt.Println("Error hashing password", err)
-			return err
+			return nil, err
 	}
 
 	newUser := User{
@@ -69,37 +68,45 @@ func UsersCreate(username, password string) error{
 		INSERT INTO users (id, username, password, created_at)
 		VALUES (?, ?, ?, ?)
 	`, newUser.ID, newUser.Username, newUser.Password, newUser.CreatedAt)
-
 	if err != nil {
 		fmt.Println("Error inserting user:", err)
-		return err
+		return nil, err
 	}
 
 	fmt.Println("User created successfully.")
-	return nil
+	u := UserCredentials {
+		ID: &userID,
+		Username: &username,
+	}
+	return &u, nil
 }
 
-func UsersLogin(username, password string) error{
+func UsersLogin(username, password string) (*UserCredentials, error){
 	db, err := sql.Open("sqlite3", "brew.db")
 	if err != nil {
 			fmt.Println("Error opening SQLite database:", err)
-			return err
+			return nil, err
 	}
   defer db.Close()
 
 	var hashedPassword string
-	err = db.QueryRow("SELECT password FROM users WHERE username = ?", username).Scan(&hashedPassword)
+	var userID string
+	err = db.QueryRow("SELECT password, id FROM users WHERE username = ?", username).Scan(&hashedPassword, &userID)
 	if err != nil {
 		fmt.Println("Error getting password from DB", err)
-		return err
+		return nil, err
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 	if err != nil {
 			fmt.Println("Error checking password hash", err)
-			return err
+			return nil, err
 	}
 
 	fmt.Println("User Login successful.")
-	return nil
+	u := UserCredentials {
+		ID: &userID,
+		Username: &username,
+	}
+	return &u, nil
 }
